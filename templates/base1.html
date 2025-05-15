@@ -11,10 +11,10 @@
     <header class="header">
         <img src="{% static 'img/Logo_Djezzy_2015-1.png' %}" alt="Djezzy Logo" class="logo">
         <div class="header-menu">
-          <a href="offresCandidat.html">OFFRE D'EMPLOI</a>
-          <a href="mesCandidat.html" >MES CANDIDATURES</a>
+          <a href="{% url 'offres_candidat' %}">OFFRE D'EMPLOI</a>
+          <a href="{% url 'mes_candidats' %}" >MES CANDIDATURES</a>
           <div class="user-icon">
-            <a href="candidatProfil.html"><i class="fas fa-user"></i></a>
+            <a href="{% url 'candidat_profile' %}"><i class="fas fa-user"></i></a>
           </div>
         </div>
       </header>    
@@ -29,9 +29,9 @@
             <div class="footer-section">
                 <h3>Liens utiles</h3>
                 <ul>
-                    <li><a href="home.html">Accueil</a></li>
-                    <li><a href="offres_d'emploi.html">Offres d'emploi</a></li>
-                    <li><a href="#">Contact</a></li>
+                    <li><a href="{% url 'home' %}">Accueil</a></li>
+                    <li><a href="{% url 'offres_emploi' %}">Offres d'emploi</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
                     
                 </ul>
             </div>

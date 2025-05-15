@@ -1,94 +1,52 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Djezzy Recrutement - Candidats</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet"href="{% static 'css/candidatsAdmin.css'%}">
-</head>
-<body>
-    <div class="container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="brand">
-                <img src="{% static 'img/Logo_Djezzy_2015-1.png' %}" alt="Logo">
-                <div class="brand-text">Djezzy Recrutement</div>
-            </div>
-            
-            <nav class="sidebar-menu">
-                <div class="menu-title">Général</div>
-                <a href="tableauDeBord.html" class="menu-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Tableau de bord</span>
-                </a>
-                <a href="ListeDesOffres.html" class="menu-item">
-                    <i class="fas fa-bullhorn"></i>
-                    <span>Annonces</span>
-                </a>
-                <a href="candidats.html" class="menu-item active">
-                    <i class="fas fa-user-tie"></i>
-                    <span>Candidats</span>
-                </a>
-                
-                <a href="Entretient.html" class="menu-item">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Entretiens</span>
-                </a>
-
-                <div class="menu-title">Compte</div>
-                <a href="adminProfile.html" class="menu-item">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Mon profil</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Déconnexion</span>
-                </a>
-            </nav>
-        </aside>
-
-        <!-- Main Content -->
-        <div class="main-content">
+{% extends 'djezzy_app/base2.html' %}
+{% load static %}
+{% block content %}
+<div class="main-content">
             <div class="header">
                 <h1 class="page-title">Candidats</h1>
                 <div class="user-info">
-                    <span>Brahim Mansouri</span>
-                    <div class="user-avatar">BM</div>
+                    <span>{{ admin.nom_admin }} {{ admin.prenom }}</span>
+                    <div class="user-avatar">{{ admin.nom_admin|first }}{{ admin.prenom|first }}</div>
                 </div>
             </div>
 
             <!-- Filters and Search -->
             <div class="filters">
-                <div class="search-bar">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Rechercher un candidat...">
-                </div>
-                <div class="filter-options">
-                    <select>
-                        <option>Tous les départements</option>
-                        <option>IT</option>
-                        <option>Marketing</option>
-                        <option>Infrastructure</option>
-                        <option>Ventes</option>
-                    </select>
-                    <select>
-                        <option>Tous les postes</option>
-                        <option>Développeur Full Stack</option>
-                        <option>Chef de Projet Digital</option>
-                        <option>Ingénieur Réseau</option>
-                        <option>Responsable Commercial</option>
-                    </select>
-                    <select>
-                        <option>Tous les statuts</option>
-                        <option>Nouveau</option>
-                        <option>Accepté</option>
-                        <option>Refusé</option>
-                    </select>
-                </div>
-                <button class="add-button">
-                </button>
+                <form method="GET" action="{% url 'candidates_list' %}">
+                    <div class="search-bar">
+                        <i class="fas fa-search"></i>
+                        <input type="text" name="search" placeholder="Rechercher un candidat..." value="{{ request.GET.search }}">
+                    </div>
+                    <div class="filter-options">
+                        <select name="department">
+                            <option value="">Tous les départements</option>
+                            {% for department in departments %}
+                            <option value="{{ department.id }}" {% if request.GET.department == department.id|stringformat:"s" %}selected{% endif %}>
+                                {{ department.nom_departement }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <select name="job">
+                            <option value="">Tous les postes</option>
+                            {% for job in jobs %}
+                            <option value="{{ job.id }}" {% if request.GET.job == job.id|stringformat:"s" %}selected{% endif %}>
+                                {{ job.titre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <select name="status">
+                            <option value="">Tous les statuts</option>
+                            {% for status in status_choices %}
+                            <option value="{{ status.0 }}" {% if request.GET.status == status.0 %}selected{% endif %}>
+                                {{ status.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="filter-button">
+                            <i class="fas fa-filter"></i> Filtrer
+                        </button>
+                    </div>
+                </form>
             </div>
 
             <!-- Candidates Table -->
@@ -105,190 +63,164 @@
                         </tr>
                     </thead>
                     <tbody>
+                        {% for application in applications %}
                         <tr>
                             <td class="candidate-info">
-                                <div class="avatar">KL</div>
+                                <div class="avatar">
+                                    {% if application.candidat.photo_profil %}
+                                    <img src="{{ application.candidat.photo_profil.url }}" alt="{{ application.candidat.user.get_full_name }}">
+                                    {% else %}
+                                    {{ application.candidat.user.first_name|first }}{{ application.candidat.user.last_name|first }}
+                                    {% endif %}
+                                </div>
                                 <div class="info">
-                                    <div class="name">Karim Lahlou</div>
-                                    <div class="email">karim.lahlou@gmail.com</div>
+                                    <div class="name">{{ application.candidat.user.get_full_name }}</div>
+                                    <div class="email">{{ application.candidat.user.email }}</div>
                                 </div>
                             </td>
-                            <td>Développeur Full Stack</td>
-                            <td>IT</td>
-                            <td>23/03/2025</td>
-                            <td><span class="status new">Nouveau</span></td>
+                            <td>{{ application.offre.titre }}</td>
+                            <td>{{ application.offre.departement.nom_departement }}</td>
+                            <td>{{ application.date_postulation|date:"d/m/Y" }}</td>
+                            <td>
+                                <span class="status {{ application.statut }}">
+                                    {{ application.get_statut_display }}
+                                </span>
+                            </td>
                             <td class="actions">
-                                <button class="action-btn view" title="Accepter"><i class="fas fa-check"></i></button>
-                                <button class="action-btn delete" title="Supprimer"><i class="fas fa-trash"></i></button>
+                                {% if application.statut == 'en_attente' %}
+                                <button class="action-btn accept" title="Accepter" onclick="openInterviewModal('{{ application.id }}', '{{ application.candidat.user.get_full_name }}')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="action-btn reject" title="Refuser" onclick="rejectApplication('{{ application.id }}')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                                {% endif %}
+                                <button class="action-btn view" title="Voir profil" onclick="window.location.href='{% url 'candidate_profile' application.candidat.id %}'">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn delete" title="Supprimer" onclick="confirmDelete('{{ application.id }}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
+                        {% empty %}
                         <tr>
-                            <td class="candidate-info">
-                                <div class="avatar">KL</div>
-                                <div class="info">
-                                    <div class="name">Karim Lahlou</div>
-                                    <div class="email">karim.lahlou@gmail.com</div>
-                                </div>
-                            </td>
-                            <td>Développeur Full Stack</td>
-                            <td>IT</td>
-                            <td>23/03/2025</td>
-                            <td><span class="status new">Nouveau</span></td>
-                            <td class="actions">
-                                <button class="action-btn view" title="Accepter"><i class="fas fa-check"></i></button>
-                                <button class="action-btn delete" title="Supprimer"><i class="fas fa-trash"></i></button>
+                            <td colspan="6" class="no-results">
+                                <i class="fas fa-info-circle"></i>
+                                Aucun candidat trouvé avec les critères sélectionnés
                             </td>
                         </tr>
-                        <tr>
-                            <td class="candidate-info">
-                                <div class="avatar">KL</div>
-                                <div class="info">
-                                    <div class="name">Karim Lahlou</div>
-                                    <div class="email">karim.lahlou@gmail.com</div>
-                                </div>
-                            </td>
-                            <td>Développeur Full Stack</td>
-                            <td>IT</td>
-                            <td>23/03/2025</td>
-                            <td><span class="status new">Nouveau</span></td>
-                            <td class="actions">
-                                <button class="action-btn view" title="Accepter"><i class="fas fa-check"></i></button>
-                                <button class="action-btn delete" title="Supprimer"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="candidate-info">
-                                <div class="avatar">KL</div>
-                                <div class="info">
-                                    <div class="name">Karim Lahlou</div>
-                                    <div class="email">karim.lahlou@gmail.com</div>
-                                </div>
-                            </td>
-                            <td>Développeur Full Stack</td>
-                            <td>IT</td>
-                            <td>23/03/2025</td>
-                            <td><span class="status new">nouveau</span></td>
-                            <td class="actions">
-                                <button class="action-btn view" title="Accepter"><i class="fas fa-check"></i></button>
-                                <button class="action-btn delete" title="Supprimer"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="candidate-info">
-                                <div class="avatar">SB</div>
-                                <div class="info">
-                                    <div class="name">Sara Benali</div>
-                                    <div class="email">sara.benali@outlook.com</div>
-                                </div>
-                            </td>
-                            <td>Chef de Projet Digital</td>
-                            <td>Marketing</td>
-                            <td>22/03/2025</td>
-                            <td><span class="status new">nouveau</span></td>
-                            <td class="actions">
-                                <button class="action-btn view" title="Accepter"><i class="fas fa-check"></i></button>
-                                <button class="action-btn delete" title="Supprimer"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="candidate-info">
-                                <div class="avatar">YM</div>
-                                <div class="info">
-                                    <div class="name">Yacine Mehdi</div>
-                                    <div class="email">yacine.mehdi@yahoo.fr</div>
-                                </div>
-                            </td>
-                            <td>Ingénieur Réseau</td>
-                            <td>Infrastructure</td>
-                            <td>21/03/2025</td>
-                            <td><span class="status new">noveau</span></td>
-                            <td class="actions">
-                                <button class="action-btn view" title="Accepter"><i class="fas fa-check"></i></button>
-                                <button class="action-btn delete" title="Supprimer"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="candidate-info">
-                                <div class="avatar">NA</div>
-                                <div class="info">
-                                    <div class="name">Naima Amrani</div>
-                                    <div class="email">naima.amrani@gmail.com</div>
-                                </div>
-                            </td>
-                            <td>Chef de Projet Digital</td>
-                            <td>Marketing</td>
-                            <td>18/03/2025</td>
-                            <td><span class="status new">nouveau</span></td>
-                            <td class="actions">
-                                <button class="action-btn view" title="Accepter"><i class="fas fa-check"></i></button>
-                                <button class="action-btn delete" title="Supprimer"><i class="fas fa-trash"></i></button>
-                            </td>
-                        </tr>
+                        {% endfor %}
                     </tbody>
-                    <!-- Ajouter ce code HTML au-dessus ou en-dessous de votre table -->
-<div id="interview-modal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span class="close-modal">&times;</span>
-            <h2>Programmer un entretien</h2>
-        </div>
-        <div class="modal-body">
-            <form id="interview-form">
-                <div class="form-group">
-                    <p>Candidat: <span id="candidate-name"></span></p>
-                </div>
-                <div class="form-group">
-                    <label for="interview-date">Date de l'entretien:</label>
-                    <input type="date" id="interview-date" required>
-                </div>
-                <div class="form-group">
-                    <label for="interview-time">Heure de l'entretien:</label>
-                    <input type="time" id="interview-time" required>
-                </div>
-                <div class="form-group">
-                    <label for="interviewer">Recruteur:</label>
-                    <select id="interviewer" required>
-                        <option value="">Sélectionner un recruteur</option>
-                        <option value="Thomas Martin">Thomas Martin</option>
-                        <option value="Sophie Dubois">Sophie Dubois</option>
-                        <option value="Jean Dupont">Jean Dupont</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="interview-type">Type d'entretien:</label>
-                    <select id="interview-type" required>
-                        <option value="">Sélectionner un type</option>
-                        <option value="Vidéo">Entretien vidéo</option>
-                        <option value="Téléphonique">Entretien téléphonique</option>
-                        <option value="Présentiel">Entretien en présentiel</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="interview-notes">Notes:</label>
-                    <textarea id="interview-notes" rows="3"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn-submit">Confirmer l'entretien</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
                 </table>
             </div>
 
             <!-- Pagination -->
             <div class="pagination">
-                <button class="page-btn prev"><i class="fas fa-chevron-left"></i></button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <span class="ellipsis">...</span>
-                <button class="page-btn">10</button>
-                <button class="page-btn next"><i class="fas fa-chevron-right"></i></button>
+                {% if applications.has_previous %}
+                <a href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">
+                    <i class="fas fa-angle-double-left"></i>
+                </a>
+                <a href="?page={{ applications.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+                {% endif %}
+
+                {% for num in applications.paginator.page_range %}
+                    {% if applications.number == num %}
+                    <span class="page-btn active">{{ num }}</span>
+                    {% elif num > applications.number|add:'-3' and num < applications.number|add:'3' %}
+                    <a href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">
+                        {{ num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if applications.has_next %}
+                <a href="?page={{ applications.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+                <a href="?page={{ applications.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.job %}&job={{ request.GET.job }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}" class="page-btn">
+                    <i class="fas fa-angle-double-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Interview Modal -->
+    <div id="interview-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2>Programmer un entretien</h2>
+            </div>
+            <div class="modal-body">
+                <form id="interview-form" method="POST" action="{% url 'schedule_interview' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="application-id" name="application_id">
+                    <div class="form-group">
+                        <p>Candidat: <strong id="candidate-name"></strong></p>
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-date">Date de l'entretien:</label>
+                        <input type="date" id="interview-date" name="date" required min="{{ today|date:'Y-m-d' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-time">Heure de l'entretien:</label>
+                        <input type="time" id="interview-time" name="time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="interviewer">Recruteur:</label>
+                        <select id="interviewer" name="interviewer" required>
+                            <option value="">Sélectionner un recruteur</option>
+                            {% for admin in admins %}
+                            <option value="{{ admin.id }}">{{ admin.nom_admin }} {{ admin.prenom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-type">Type d'entretien:</label>
+                        <select id="interview-type" name="interview_type" required>
+                            <option value="">Sélectionner un type</option>
+                            <option value="video">Entretien vidéo</option>
+                            <option value="telephone">Entretien téléphonique</option>
+                            <option value="presentiel">Entretien en présentiel</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="interview-notes">Notes:</label>
+                        <textarea id="interview-notes" name="notes" rows="3"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Confirmer l'entretien</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content small-modal">
+            <div class="modal-header">
+                <span class="close-modal" onclick="closeModal()">&times;</span>
+                <h2>Confirmer la suppression</h2>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir supprimer cette candidature?</p>
+                <form id="delete-form" method="POST" action="{% url 'delete_application' %}">
+                    {% csrf_token %}
+                    <input type="hidden" id="delete-id" name="application_id">
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeModal()">Annuler</button>
+                        <button type="submit" class="btn-delete">Supprimer</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
     <script src="{% static 'js/mainA.js' %}"></script>
 </body>
 </html>
+{% endblock %}

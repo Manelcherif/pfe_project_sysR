@@ -9,8 +9,8 @@
             <div class="header">
                 <h1 class="page-title">Mon Profil</h1>
                 <div class="user-info">
-                    <span class="user-name">Brahim Mansouri</span>
-                    <div class="user-avatar">BM</div>
+                    <span class="user-name">{{ Admin.nom_admin }}  {{ Admin.prenom }}</span>
+                
                 </div>
             </div>
 
@@ -28,7 +28,7 @@
                                 <i class="fas fa-camera"></i>
                             </div>
                         </div>
-                        <div class="profile-name">{{ Admin.nom_admin }}</div>
+                        <div class="profile-name">{{ Admin.nom_admin }} {{ Admin.prenom }}</div>
                         <div class="profile-title">Administrateur Système Senior</div>
                     </div>
                     
@@ -60,6 +60,7 @@
                         <div class="profile-detail-item">
                             <div class="detail-icon">
                                 <i class="fas fa-phone"></i>
+                                 <div class="detail-value">{{ Admin.telephone }}</div>
                             </div>
                         
                         </div>
@@ -68,8 +69,8 @@
                                 <i class="fas fa-building"></i>
                             </div>
                             <div class="detail-content">
-                                <div class="detail-label">Département</div>
-                                <div class="detail-value">Technologie de l'Information</div>
+                                <div class="detail-label">  Region </div>
+                                <div class="detail-value">{{ Admin.region }}</div>
                             </div>
                         </div>
                         <div class="profile-detail-item">
@@ -78,7 +79,7 @@
                             </div>
                             <div class="detail-content">
                                 <div class="detail-label">Localisation</div>
-                                <div class="detail-value">{{ Admin.region }}</div>
+                                <div class="detail-value"> {{ Admin.adresse}}</div>
                             </div>
                         </div>
                         <div class="profile-detail-item">
@@ -86,8 +87,8 @@
                                 <i class="fas fa-calendar-alt"></i>
                             </div>
                             <div class="detail-content">
-                                <div class="detail-label">Date d'embauche</div>
-                                <div class="detail-value">15 Juin 2020</div>
+                                <div class="detail-label">Date naissance</div>
+                                <div class="detail-value"> {{ Admin.date_naissance }}</div>
                             </div>
                         </div>
                     </div>
@@ -121,13 +122,13 @@
                                 <div class="form-col">
                                     <div class="profile-form-group">
                                         <label class="profile-form-label">Nom</label>
-                                        <input type="text" class="profile-form-input" value="Mansouri" disabled>
+                                        <input type="text" class="profile-form-input" value=" {{ Admin.nom_admin }}" disabled>
                                     </div>
                                 </div>
                                 <div class="form-col">
                                     <div class="profile-form-group">
                                         <label class="profile-form-label">Prénom</label>
-                                        <input type="text" class="profile-form-input" value="Brahim" disabled>
+                                        <input type="text" class="profile-form-input" value=" {{ Admin.prenom }}" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -135,13 +136,13 @@
                                 <div class="form-col">
                                     <div class="profile-form-group">
                                         <label class="profile-form-label">Email</label>
-                                        <input type="email" class="profile-form-input" value="brahim.mansouri@djezzy.dz" disabled>
+                                        <input type="email" class="profile-form-input" value=" {{ Admin.email_admin }}" disabled>
                                     </div>
                                 </div>
                                 <div class="form-col">
                                     <div class="profile-form-group">
                                         <label class="profile-form-label">Téléphone</label>
-                                        <input type="tel" class="profile-form-input" value="+213 555 123 456" disabled>
+                                        <input type="tel" class="profile-form-input" value=" {{ Admin.telephone }}" disabled>
                                     </div>
                                 </div>
                             </div>
@@ -149,20 +150,17 @@
                                 <div class="form-col">
                                     <div class="profile-form-group">
                                         <label class="profile-form-label">Date de naissance</label>
-                                        <input type="date" class="profile-form-input" value="1985-08-12" disabled>
+                                        <input type="date" class="profile-form-input" value=" {{ Admin.date_naissance }}" disabled>
                                     </div>
                                 </div>
                                 <div class="form-col">
                                     <div class="profile-form-group">
                                         <label class="profile-form-label">Adresse</label>
-                                        <input type="text" class="profile-form-input" value="Sidi Yahia, Hydra, Alger" disabled>
+                                        <input type="text" class="profile-form-input" value=" {{ Admin.adresse }}" disabled>
                                     </div>
                                 </div>
                             </div>
-                            <div class="profile-form-group">
-                                <label class="profile-form-label">Biographie</label>
-                                <textarea class="profile-form-input" rows="4" disabled>Administrateur système senior avec 8 ans d'expérience dans la gestion de systèmes IT complexes et le développement de solutions de recrutement digitales. Expert en optimisation de processus RH et en sécurité des données.</textarea>
-                            </div>
+                            
                         </div>
                     </div>
 

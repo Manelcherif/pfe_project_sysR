@@ -29,8 +29,8 @@
                 <h3>Langues</h3>
                 {% for candidat_langue in candidat.candidatlangue_set.all %}
                 <div class="language-item">
-                    <span>{{ candidat_langue.langue.nom }}:</span>
-                    <span>{{ candidat_langue.get_niveau_display }}</span>
+                    <span>{{ candidatLangue.langue.nom }}:</span>
+                    <span>{{ candidatLangue.get_niveau_display }}</span>
                 </div>
                 {% endfor %}
             </div>
@@ -152,10 +152,10 @@
             <div class="form-row">
                 {% for candidat_langue in candidat.candidatlangue_set.all %}
                 <div class="form-group">
-                    <label>{{ candidat_langue.langue.nom }}</label>
-                    <select name="langue_{{ candidat_langue.langue.id }}">
-                        {% for code, label in candidat_langue.LEVEL_CHOICES %}
-                            <option value="{{ code }}" {% if candidat_langue.niveau == code %}selected{% endif %}>
+                    <label>{{ CandidatLangue.langue.nom }}</label>
+                    <select name="langue_{{ CandidatLangue.langue.id }}">
+                        {% for code, label in CandidatLangue.LEVEL_CHOICES %}
+                            <option value="{{ code }}" {% if CandidatLangue.niveau == code %}selected{% endif %}>
                                 {{ label }}
                             </option>
                         {% endfor %}

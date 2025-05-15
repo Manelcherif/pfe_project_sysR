@@ -1,161 +1,314 @@
-{% load static %}
 {% extends 'djezzy_app/base2.html' %}
-{% block contentCandidat%}
-    <link rel="stylesheet"href="{% static 'css/creeAnnonce.css'%}">
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/creeAnnonce.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="header">
-                <h1 class="page-title">Créer une annonce</h1>
-                <a href="ListeDesOffres.html" class="btn btn-view-listings"> Liste des annonces</a>
+<main class="main-content">
+    <div class="header">
+        <h1 class="page-title">Créer une annonce</h1>
+        <a href="{% url 'job_listings' %}" class="btn btn-view-listings">
+            <i class="fas fa-list"></i> Liste des annonces
+        </a>
+        
+        <div class="user-info">
+            <span class="user-name">{{ admin.nom_admin }} {{ admin.prenom }}</span>
+            <div class="user-avatar">{{ admin.nom_admin|first }}{{ admin.prenom|first }}</div>
+        </div>
+    </div>
+    
+    <!-- Form Container -->
+    <div class="form-container">
+        <form id="jobPostingForm" method="POST" action="{% url 'create_job_posting' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <!-- Job Details Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Informations générales</h2>
                 
-                <div class="user-info">
-                    <span class="user-name">Brahim Mansouri</span>
-                    <div class="user-avatar">BM</div>
+                <div class="form-group">
+                    <label for="id_title">Titre du poste *</label>
+                    <input type="text" id="id_title" name="title" placeholder="Ex: Développeur Full Stack" required
+                           value="{{ form.title.value|default:'' }}">
+                    <div class="error-message">{{ form.title.errors }}</div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="id_department">Département *</label>
+                        <select id="id_department" name="department" required>
+                            <option value="">Sélectionner un département</option>
+                            {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if form.department.value == dept.id %}selected{% endif %}>
+                                {{ dept.nom_departement }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="error-message">{{ form.department.errors }}</div>
+                    </div>
+                    <div class="form-col">
+                        <label for="id_region">Région *</label>
+                        <select id="id_region" name="region" required>
+                            <option value="">Sélectionner une région</option>
+                            {% for region in regions %}
+                            <option value="{{ region.id }}" {% if form.region.value == region.id %}selected{% endif %}>
+                                {{ region.get_nom_display }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="error-message">{{ form.region.errors }}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="id_employment_type">Type de contrat *</label>
+                        <select id="id_employment_type" name="employment_type" required>
+                            <option value="">Sélectionner un type</option>
+                            {% for type in employment_types %}
+                            <option value="{{ type.0 }}" {% if form.employment_type.value == type.0 %}selected{% endif %}>
+                                {{ type.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="error-message">{{ form.employment_type.errors }}</div>
+                    </div>
+                    <div class="form-col">
+                        <label for="id_experience_level">Niveau d'expérience *</label>
+                        <select id="id_experience_level" name="experience_level" required>
+                            <option value="">Sélectionner un niveau</option>
+                            {% for level in experience_levels %}
+                            <option value="{{ level.0 }}" {% if form.experience_level.value == level.0 %}selected{% endif %}>
+                                {{ level.1 }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="error-message">{{ form.experience_level.errors }}</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-col">
+                        <label for="id_publish_date">Date de publication *</label>
+                        <input type="date" id="id_publish_date" name="publish_date" 
+                               value="{{ form.publish_date.value|default:''|date:'Y-m-d' }}" required>
+                        <div class="error-message">{{ form.publish_date.errors }}</div>
+                    </div>
+                    <div class="form-col">
+                        <label for="id_application_deadline">Date limite de candidature *</label>
+                        <input type="date" id="id_application_deadline" name="application_deadline"
+                               value="{{ form.application_deadline.value|default:''|date:'Y-m-d' }}" required>
+                        <div class="error-message">{{ form.application_deadline.errors }}</div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Form Container -->
-            <div class="form-container">
-                <form id="jobPostingForm">
-                    <!-- Job Details Section -->
-                    <div class="form-section">
-                        <h2 class="section-title">Informations générales</h2>
-                        
-                        <div class="form-group">
-                            <label for="jobTitle">Titre du poste *</label>
-                            <input type="text" id="jobTitle" placeholder="Ex: Développeur Full Stack" required>
-                            <div class="error-message">Veuillez saisir le titre du poste</div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <label for="department">Département *</label>
-                                <select id="department" required>
-                                    <option value="">Sélectionner un département</option>
-                                    <option value="it">IT</option>
-                                    <option value="marketing">Marketing</option>
-                                    <option value="finance">Finance</option>
-                                    <option value="hr">Ressources Humaines</option>
-                                    <option value="sales">Ventes</option>
-                                    <option value="operations">Opérations</option>
-                                    <option value="customer_service">Service Client</option>
-                                </select>
-                                <div class="error-message">Veuillez sélectionner un département</div>
+            <!-- Job Description Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-align-left"></i> Description du poste</h2>
+                
+                <div class="form-group">
+                    <label for="id_short_description">Brève description (résumé) *</label>
+                    <textarea id="id_short_description" name="short_description" 
+                              placeholder="Écrivez un bref résumé du poste (max 300 caractères)" 
+                              maxlength="300" required>{{ form.short_description.value|default:'' }}</textarea>
+                    <div class="error-message">{{ form.short_description.errors }}</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_description">Description détaillée *</label>
+                    <textarea id="id_description" name="description" style="display:none;"></textarea>
+                    <div class="editor-container">
+                        <div class="toolbar">
+                            <div class="toolbar-group">
+                                <button type="button" class="format-btn" data-command="bold" title="Gras">
+                                    <i class="fas fa-bold"></i>
+                                </button>
+                                <button type="button" class="format-btn" data-command="italic" title="Italique">
+                                    <i class="fas fa-italic"></i>
+                                </button>
+                                <button type="button" class="format-btn" data-command="underline" title="Souligné">
+                                    <i class="fas fa-underline"></i>
+                                </button>
                             </div>
-                            <div class="form-col">
-                                <label for="location">Lieu *</label>
-                                <select id="location" required>
-                                    <option value="">Sélectionner un lieu</option>
-                                    <option value="alger">Alger</option>
-                                    <option value="oran">Oran</option>
-                                    <option value="constantine">Constantine</option>
-                                    <option value="annaba">Annaba</option>
-                                    <option value="remote">Télétravail</option>
-                                </select>
-                                <div class="error-message">Veuillez sélectionner un lieu</div>
+                            <div class="toolbar-group">
+                                <button type="button" class="format-btn" data-command="insertUnorderedList" title="Liste à puces">
+                                    <i class="fas fa-list-ul"></i>
+                                </button>
+                                <button type="button" class="format-btn" data-command="insertOrderedList" title="Liste numérotée">
+                                    <i class="fas fa-list-ol"></i>
+                                </button>
                             </div>
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <label for="employmentType">Type de contrat *</label>
-                                <select id="employmentType" required>
-                                    <option value="">Sélectionner un type</option>
-                                    <option value="full_time">CDI</option>
-                                    <option value="part_time">CDD</option>
-                                    <option value="contract">Contrat de prestation</option>
-                                    <option value="internship">Stage</option>
-                                </select>
-                                <div class="error-message">Veuillez sélectionner un type de contrat</div>
-                            </div>
-                            <div class="form-col">
-                                <label for="experienceLevel">Niveau d'expérience *</label>
-                                <select id="experienceLevel" required>
-                                    <option value="">Sélectionner un niveau</option>
-                                    <option value="entry">Débutant (0-2 ans)</option>
-                                    <option value="mid">Intermédiaire (2-5 ans)</option>
-                                    <option value="senior">Senior (5-8 ans)</option>
-                                    <option value="expert">Expert (8+ ans)</option>
-                                </select>
-                                <div class="error-message">Veuillez sélectionner un niveau d'expérience</div>
+                            <div class="toolbar-group">
+                                <button type="button" class="format-btn" data-command="h2" title="Titre">
+                                    <i class="fas fa-heading"></i>
+                                </button>
+                                <button type="button" class="format-btn" data-command="blockquote" title="Citation">
+                                    <i class="fas fa-quote-right"></i>
+                                </button>
                             </div>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="form-col">
-                                <label for="publishDate">Date de publication *</label>
-                                <input type="date" id="publishDate" required>
-                                <div class="error-message">Veuillez sélectionner une date de publication</div>
-                            </div>
-                            <div class="form-col">
-                                <label for="applicationDeadline">Date limite de candidature *</label>
-                                <input type="date" id="applicationDeadline" required>
-                                <div class="error-message">Veuillez sélectionner une date limite</div>
-                            </div>
+                        <div id="richTextEditor" class="editor-content" contenteditable="true">
+                            {{ form.description.value|default:''|safe }}
                         </div>
                     </div>
-                    
-                    <!-- Job Description Section -->
-                    <div class="form-section">
-                        <h2 class="section-title">Description du poste</h2>
-                        
-                        <div class="form-group">
-                            <label for="shortDescription">Brève description (résumé) *</label>
-                            <textarea id="shortDescription" placeholder="Écrivez un bref résumé du poste (max 300 caractères)" maxlength="300" required></textarea>
-                            <div class="error-message">Veuillez saisir une brève description</div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="jobDescription">Description détaillée *</label>
-                            <div class="editor-container">
-                                <div class="toolbar">
-                                    <div class="toolbar-group">
-                                        <button type="button" title="Gras"><i class="fas fa-bold"></i></button>
-                                        <button type="button" title="Italique"><i class="fas fa-italic"></i></button>
-                                        <button type="button" title="Souligné"><i class="fas fa-underline"></i></button>
-                                    </div>
-                                    <div class="toolbar-group">
-                                        <button type="button" title="Liste à puces"><i class="fas fa-list-ul"></i></button>
-                                        <button type="button" title="Liste numérotée"><i class="fas fa-list-ol"></i></button>
-                                    </div>
-                                    <div class="toolbar-group">
-                                        <button type="button" title="Titre"><i class="fas fa-heading"></i></button>
-                                        <button type="button" title="Citation"><i class="fas fa-quote-right"></i></button>
-                                    </div>
-                                </div>
-                                <div id="jobDescription" class="editor-content" contenteditable="true"></div>
-                            </div>
-                            <div class="error-message">Veuillez saisir une description détaillée</div>
-                        </div>
-                        
-                        <!-- Skills and Tags Section -->
-                        <div class="form-section">
-                            <h2 class="section-title">
-                                Compétences et tags
-                                
-                            </h2>
-                        
-                            <div class="form-group">
-                                <label for="skills">Compétences requises</label>
-                                <div class="skills-container" id="skillsContainer">
-                                    <!-- Skills will be added here -->
-                                </div>
-                                <div class="skill-input">
-                                    <input type="text" id="skillInput" placeholder="Ajouter une compétence...">
-                                    <button type="button" class="btn-add" id="addSkill">Ajouter</button>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                    <!-- Form Actions -->
-                    <div class="form-actions">
-                        <button type="button" class="btn btn-cancel">Annuler</button>
-                        <button type="submit" class="btn btn-publish">Publier l'annonce</button>
-                    </div>
-                </form>
+                    <div class="error-message">{{ form.description.errors }}</div>
+                </div>
             </div>
-        </main>
+            
+            <!-- Skills and Tags Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-tools"></i> Compétences et tags</h2>
+            
+                <div class="form-group">
+                    <label for="id_skills">Compétences requises</label>
+                    <select id="id_skills" name="skills" class="skills-select" multiple="multiple">
+                        {% for skill in skills %}
+                        <option value="{{ skill.id }}" 
+                                {% if skill.id in form.skills.value %}selected{% endif %}>
+                            {{ skill.nom }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="error-message">{{ form.skills.errors }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_specialties">Spécialités</label>
+                    <select id="id_specialties" name="specialties" class="skills-select" multiple="multiple">
+                        {% for specialty in specialties %}
+                        <option value="{{ specialty.id }}" 
+                                {% if specialty.id in form.specialties.value %}selected{% endif %}>
+                            {{ specialty.nom }} ({{ specialty.domaine.nom }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="error-message">{{ form.specialties.errors }}</div>
+                </div>
+            </div>
+
+            <!-- Additional Information Section -->
+            <div class="form-section">
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Informations supplémentaires</h2>
+                
+                <div class="form-group">
+                    <label for="id_salary_range">Fourchette salariale</label>
+                    <input type="text" id="id_salary_range" name="salary_range" 
+                           placeholder="Ex: 50,000 - 70,000 DZD" value="{{ form.salary_range.value|default:'' }}">
+                    <div class="error-message">{{ form.salary_range.errors }}</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_benefits">Avantages</label>
+                    <textarea id="id_benefits" name="benefits" 
+                              placeholder="Listez les avantages offerts (séparés par des virgules)">{{ form.benefits.value|default:'' }}</textarea>
+                    <div class="error-message">{{ form.benefits.errors }}</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_application_instructions">Instructions de candidature</label>
+                    <textarea id="id_application_instructions" name="application_instructions"
+                              placeholder="Instructions spécifiques pour les candidats">{{ form.application_instructions.value|default:'' }}</textarea>
+                    <div class="error-message">{{ form.application_instructions.errors }}</div>
+                </div>
+            </div>
+            
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="window.location.href='{% url 'job_listings' %}'">
+                    <i class="fas fa-times"></i> Annuler
+                </button>
+                <button type="submit" class="btn btn-publish">
+                    <i class="fas fa-paper-plane"></i> Publier l'annonce
+                </button>
+                <button type="submit" name="save_draft" value="true" class="btn btn-save-draft">
+                    <i class="fas fa-save"></i> Enregistrer comme brouillon
+                </button>
+            </div>
+        </form>
     </div>
-    {% endblock %}  
+</main>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Initialize Select2
+        $('.skills-select').select2({
+            placeholder: "Sélectionnez...",
+            allowClear: true,
+            tags: true,
+            tokenSeparators: [',', ' ']
+        });
+
+        // Rich text editor functionality
+        $('.format-btn').click(function() {
+            const command = $(this).data('command');
+            document.execCommand(command, false, null);
+            $('#richTextEditor').focus();
+        });
+
+        // Sync rich text editor with hidden textarea before form submission
+        $('#jobPostingForm').submit(function() {
+            $('#id_description').val($('#richTextEditor').html());
+        });
+
+        // Date validation
+        const today = new Date().toISOString().split('T')[0];
+        $('#id_publish_date').attr('min', today);
+        $('#id_application_deadline').attr('min', today);
+
+        $('#id_publish_date').change(function() {
+            $('#id_application_deadline').attr('min', $(this).val());
+        });
+
+        // Form validation
+        $('#jobPostingForm').on('submit', function(e) {
+            let isValid = true;
+            
+            // Validate required fields
+            $('[required]').each(function() {
+                if (!$(this).val()) {
+                    $(this).next('.error-message').show();
+                    isValid = false;
+                } else {
+                    $(this).next('.error-message').hide();
+                }
+            });
+
+            // Validate dates
+            const publishDate = new Date($('#id_publish_date').val());
+            const deadlineDate = new Date($('#id_application_deadline').val());
+            
+            if (deadlineDate < publishDate) {
+                $('#id_application_deadline').next('.error-message').text(
+                    'La date limite doit être après la date de publication'
+                ).show();
+                isValid = false;
+            }
+
+            // Validate description length
+            if ($('#richTextEditor').text().trim().length < 50) {
+                $('#id_description').next('.error-message').text(
+                    'La description doit contenir au moins 50 caractères'
+                ).show();
+                isValid = false;
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+                $('html, body').animate({
+                    scrollTop: $('.error-message:visible').first().offset().top - 100
+                }, 500);
+            }
+        });
+
+        // Initialize form with any existing errors
+        {% if form.errors %}
+        $('html, body').animate({
+            scrollTop: $('.error-message:visible').first().offset().top - 100
+        }, 500);
+        {% endif %}
+    });
+</script>
+{% endblock %}
