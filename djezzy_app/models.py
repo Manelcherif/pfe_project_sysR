@@ -7,10 +7,10 @@ from django.conf import settings
 # Modèle Admin
 class Admin(models.Model):
     nom_admin = models.CharField(max_length=100)
-    prenom=models.CharField(max_length=100)
-    date_naissance=models.DateField()
-    adresse=models.CharField(max_length=100)
-    telephone=models.CharField(max_length=20)
+    prenom=models.CharField(max_length=100, default='')
+    date_naissance=models.DateField(null=True, blank=True)
+    adresse=models.CharField(max_length=100, default='')
+    telephone=models.CharField(max_length=20,default='0000000000')
     email_admin = models.EmailField()
     password = models.CharField(max_length=100)
     region = models.ForeignKey('Region', on_delete=models.SET_NULL, null=True, blank=True)

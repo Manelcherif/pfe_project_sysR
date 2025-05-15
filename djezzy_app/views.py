@@ -36,49 +36,49 @@ from .serializers import (
 )
 # Pages normales (templates HTML)
 def home(request):
-    return render(request, 'djezzy_app/home.html')
+    return render(request, 'home.html')
 
 def a_propos(request):
-    return render(request, 'djezzy_app/A_propos.html')
+    return render(request, 'A_propos.html')
 
 def admin_profile(request):
-    return render(request, 'djezzy_app/adminProfile.html')
+    return render(request, 'adminProfile.html')
 
 def candidat_profile(request):
-    return render(request, 'djezzy_app/candidatProfile.html')
+    return render(request, 'candidatProfile.html')
 
 def candidats(request):
-    return render(request, 'djezzy_app/candidats.html')
+    return render(request, 'candidats.html')
 
 def connexion(request):
-    return render(request, 'djezzy_app/connexion.html')
+    return render(request, 'connexion.html')
 
 def contact(request):
-    return render(request, 'djezzy_app/contact.html')
+    return render(request, 'contact.html')
 
 def creer_annonce(request):
-    return render(request, 'djezzy_app/creerAnnonce.html')
+    return render(request, 'creerAnnonce.html')
 
 def entretien(request):
-    return render(request, 'djezzy_app/Entretient.html')
+    return render(request, 'Entretient.html')
 
 def liste_des_offres(request):
-    return render(request, 'djezzy_app/ListeDesOffres.html')
+    return render(request, 'ListeDesOffres.html')
 
 def mes_candidats(request):
-    return render(request, 'djezzy_app/mesCandidat.html')
+    return render(request, 'mesCandidat.html')
 
 def offres_emploi(request):
-    return render(request, 'djezzy_app/offres_d\'emploi.html')
+    return render(request, 'offres_d\'emploi.html')
 
 def offres_candidat(request):
-    return render(request, 'djezzy_app/offresCandidat.html')
+    return render(request, 'offresCandidat.html')
 
 def responsable(request):
-    return render(request, 'djezzy_app/Responsable.html')
+    return render(request, 'Responsable.html')
 
 def tableau_de_bord(request):
-    return render(request, 'djezzy_app/tableauDeBord.html')
+    return render(request, 'tableauDeBord.html')
 
 
     

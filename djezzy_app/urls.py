@@ -73,9 +73,5 @@ urlpatterns = [
     path('offres/liste/', liste_offres_api, name='liste-offres'),
     path('candidatures/<int:id>/', detail_candidature, name='detail-candidature'),
 
-    # Added URL patterns to match expected URLs with .html extensions
-    path('offres_d\'emploi.html', offres_emploi, name='offres-emploi-html'),
-    path('A_propos.html', a_propos, name='a-propos-html'),
-    path('contact.html', contact, name='contact-html'),
-    path('connexion.html', connexion, name='connexion-html'),
+    # Removed URL patterns with .html extensions for cleaner URLs
 ]

@@ -1,3 +1,4 @@
+
 from pathlib import Path
 import os
 
@@ -35,7 +36,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'pfe_project.urls'
+ROOT_URLCONF = 'djezzy_project.urls'
 
 TEMPLATES = [
     {
@@ -53,7 +54,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'pfe_project.wsgi.application'
+WSGI_APPLICATION = 'djezzy_project.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -85,9 +86,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'pfe_project/static'),
+    os.path.join(BASE_DIR, 'djezzy_project/static'),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

@@ -15,4 +15,4 @@ class FrontendAppView(View):
                 return HttpResponse(f.read())
         except FileNotFoundError:
             # Serve Django home template as fallback
-            return render(request, 'djezzy_app/home.html')
+            return render(request, 'home.html')
