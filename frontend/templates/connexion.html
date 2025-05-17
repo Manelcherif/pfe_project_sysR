@@ -1,4 +1,3 @@
-
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
@@ -206,11 +205,13 @@
                 <input type="checkbox" id="enCours">
                 <label for="enCours">En cours</label>
             </div>
-            
+            <button type="button" class="c1" onclick="ajouterFormation()">Ajouter une formation</button>
+            <div id="formations-container"></div>
             <div class="button-group">
                 <button type="button" class="btn" onclick="toggleAuth('register', event)">Précédent</button>
                 <button type="button" class="auth-btn" onclick="toggleAuth('experience', event)">Suivant</button>
             </div>
+            
         </form>
     </div>
     
@@ -261,11 +262,13 @@
                     </div>
                 </div> 
             </div>
-            
+            <button type="button" class="c1" onclick="ajouterExperience()">Ajouter une expérience</button>
+               <div id="experiences-container"></div>
             <div class="button-group">
                 <button type="button" class="btn" onclick="toggleAuth('formation', event)">Précédent</button>
                 <button type="button" class="auth-btn" onclick="toggleAuth('competences', event)">Suivant</button>
             </div>
+            
         </form>                   
     </div>
     
@@ -276,35 +279,20 @@
         </div>
         <form> 
             <h3>Langue</h3>
-            <p>Français</p>
-            <div class="button-container">
-                <button type="button" class="c1">A1</button>
-                <button type="button" class="c1">A2</button>
-                <button type="button" class="c1">B1</button>
-                <button type="button" class="c1">B2</button>
-                <button type="button" class="c1">C1</button>
-                <button type="button" class="c1">C2</button>
-            </div>
-            
-            <p>Anglais</p>
-            <div class="button-container">
-                <button type="button" class="c1">A1</button>
-                <button type="button" class="c1">A2</button>
-                <button type="button" class="c1">B1</button>
-                <button type="button" class="c1">B2</button>
-                <button type="button" class="c1">C1</button>
-                <button type="button" class="c1">C2</button>
-            </div> 
-            
-            <p>Arabe</p>
-            <div class="button-container">
-                <button type="button" class="c1">A1</button>
-                <button type="button" class="c1">A2</button>
-                <button type="button" class="c1">B1</button>
-                <button type="button" class="c1">B2</button>
-                <button type="button" class="c1">C1</button>
-                <button type="button" class="c1">C2</button>
-            </div>  
+           <div id="langues-container">
+    <div class="form-row langue-block">
+    <input type="text" placeholder="Langue">
+    <div class="button-container">
+        <button type="button" class="c1">A1</button>
+        <button type="button" class="c1">A2</button>
+        <button type="button" class="c1">B1</button>
+        <button type="button" class="c1">B2</button>
+        <button type="button" class="c1">C1</button>
+        <button type="button" class="c1">C2</button>
+    </div>
+</div>
+</div>
+<button type="button" class="c1" onclick="ajouterLangue()">Ajouter une langue</button>
             
             <h3>Compétences</h3>
 <div class="input-group">
@@ -322,4 +310,5 @@
         </form>
     </div>
 </section>
+
 {% endblock %}

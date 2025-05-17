@@ -1,4 +1,6 @@
-function toggleAuth(formType, event) {
+
+// Fonction pour basculer entre les cartes d'authentification
+ function toggleAuth(formType, event) {
     // Empêcher le comportement par défaut du formulaire
     if (event) {
         event.preventDefault();
@@ -69,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
-
 // Ajouter cette fonction à votre script JavaScript existant
 function ajouterCompetence() {
     // Récupérer le champ de saisie de compétence
@@ -117,7 +118,9 @@ function supprimerCompetence(button) {
 
 // Ajouter ceci à votre fonction d'initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', function() {
- // Ajouter l'écouteur d'événement au bouton "Ajouter" des compétences
+    // Code d'initialisation existant...
+    
+    // Ajouter l'écouteur d'événement au bouton "Ajouter" des compétences
     const btnAjouterCompetence = document.querySelector('.compet-card .input-group .c1');
     if (btnAjouterCompetence) {
         btnAjouterCompetence.addEventListener('click', ajouterCompetence);
@@ -135,7 +138,125 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function ajouterFormation() {
+    const container = document.getElementById("formations-container");
+    const bloc = `
+        <div class="form-row">
+            <div class="input-group">
+                <label>Établissement</label>
+                <div class="input-field">
+                    <i class="fas fa-building"></i>
+                    <input type="text" placeholder="Établissement">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Niveau d'étude</label>
+                <div class="input-field">
+                    <i class="fas fa-university"></i>
+                    <input type="text" placeholder="Niveau d'étude">
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="input-group">
+                <label>Domaine</label>
+                <div class="input-field">
+                    <i class="fas fa-briefcase"></i>
+                    <input type="text" placeholder="Domaine">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Spécialité</label>
+                <div class="input-field">
+                    <i class="fas fa-briefcase"></i>
+                    <input type="text" placeholder="Spécialité">
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="input-group">
+                <label>Début</label>
+                <div class="input-field">
+                    <i class="fas fa-calendar"></i>
+                    <input type="date">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Fin</label>
+                <div class="input-field">
+                    <i class="fas fa-calendar"></i>
+                    <input type="date">
+                </div>
+            </div>
+        </div>
+        <hr>`;
+    container.insertAdjacentHTML('beforeend', bloc);
+}
 
+function ajouterExperience() {
+    const container = document.getElementById("experiences-container");
+    const bloc = `
+        <div class="form-row">
+            <div class="input-group">
+                <label>Poste</label>
+                <div class="input-field">
+                    <i class="fas fa-building"></i>
+                    <input type="text" placeholder="Poste occupé">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Entreprise</label>
+                <div class="input-field">
+                    <i class="fas fa-building"></i>
+                    <input type="text" placeholder="Entreprise">
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="input-group">
+                <label>Domaine</label>
+                <div class="input-field">
+                    <i class="fas fa-briefcase"></i>
+                    <input type="text" placeholder="Domaine d'activité">
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="input-group">
+                <label>Début</label>
+                <div class="input-field">
+                    <i class="fas fa-calendar"></i>
+                    <input type="date">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Fin</label>
+                <div class="input-field">
+                    <i class="fas fa-calendar"></i>
+                    <input type="date">
+                </div>
+            </div>
+        </div>
+        <hr>`;
+    container.insertAdjacentHTML('beforeend', bloc);
+}
+
+function ajouterLangue() {
+    const container = document.getElementById("langues-container");
+    const bloc = `
+       <div class="form-row langue-block">
+    <input type="text" placeholder="Langue">
+    <div class="button-container">
+        <button type="button" class="c1">A1</button>
+        <button type="button" class="c1">A2</button>
+        <button type="button" class="c1">B1</button>
+        <button type="button" class="c1">B2</button>
+        <button type="button" class="c1">C1</button>
+        <button type="button" class="c1">C2</button>
+    </div>
+</div>`;
+    container.insertAdjacentHTML('beforeend', bloc);
+}
 function searchOffers() {
     const input = document.getElementById('searchInput').value.toLowerCase();
     const cards = document.querySelectorAll('.offre-card');

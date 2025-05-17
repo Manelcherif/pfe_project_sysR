@@ -209,3 +209,8 @@ class CandidatLangueSerializer(serializers.ModelSerializer):
     class Meta:
         model = CandidatLangue
         fields = ['id', 'candidat', 'langue', 'niveau', 'niveau_display']
+
+class CandidatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Candidat
+        fields = '__all__'        
