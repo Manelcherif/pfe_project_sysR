@@ -15,8 +15,12 @@
                 <form method="GET" action="{% url 'candidates_list' %}">
                     <div class="search-bar">
                         <i class="fas fa-search"></i>
-                        <input type="text" name="search" placeholder="Rechercher un candidat..." value="{{ request.GET.search }}">
+                        <input type="text" name="search" placeholder="Rechercher un offre..." value="{{ request.GET.search }}">
                     </div>
+                     <button class="best-candidates-btn">
+            <i class="fas fa-star"></i>
+            Meilleurs candidats
+        </button>
                     <div class="filter-options">
                         <select name="department">
                             <option value="">Tous les départements</option>
