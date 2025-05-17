@@ -5,7 +5,7 @@ from .views import (
     login_view, liste_offres_api, detail_candidature, logout_view, RegisterCandidatView,
     home, a_propos, admin_profile, candidat_profile, candidats, connexion, contact,
     creer_annonce, entretien, liste_des_offres, mes_candidats, offres_emploi, offres_candidat,
-    responsable, tableau_de_bord
+    responsable, tableau_de_bord,connexionAdmin
 )
 from .views import (
     CandidatViewSet,
@@ -48,6 +48,7 @@ urlpatterns = [
     path('candidat-profile/', candidat_profile, name='candidat-profile'),
     path('candidats/', candidats, name='candidats'),
     path('connexion/', connexion, name='connexion'),
+    path('connexion admin/', connexion, name='connexionAdmin'),
     path('contact/', contact, name='contact'),
     path('creer-annonce/', creer_annonce, name='creer-annonce'),
     path('entretien/', entretien, name='entretien'),

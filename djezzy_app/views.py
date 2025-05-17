@@ -53,6 +53,9 @@ def candidats(request):
 def connexion(request):
     return render(request, 'connexion.html')
 
+def connexionAdmin(request):
+    return render(request, 'connexionAdmin.html')
+
 def contact(request):
     return render(request, 'contact.html')
 
@@ -81,8 +84,6 @@ def tableau_de_bord(request):
     return render(request, 'tableauDeBord.html')
 
 
-    
-    return render(request, 'djezzy_app/base.html',{})
 
 
 
