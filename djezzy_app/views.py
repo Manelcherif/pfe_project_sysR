@@ -494,34 +494,31 @@ class CandidatureViewSet(viewsets.ModelViewSet):
         else:
             return Response({"detail": "Action invalide."}, status=status.HTTP_400_BAD_REQUEST)
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login
+
 @api_view(['POST'])
 def login_view(request):
     """
     Vue de connexion pour les utilisateurs (candidats et admins).
     """
-    email = request.data.get('email')
-    password = request.data.get('password')
-    
-    # Essaie d'authentifier avec l'email comme username
-    user = authenticate(request, username=email, password=password)
-
-    if user is not None:
-        login(request, user)  # Enregistre la session
+    if request.method == 'POST':
+        email = request.data.get('email')
+        password = request.data.get('password')
         
-        # Détermine le type d'utilisateur
-        user_type = None
-        if hasattr(user, 'candidat'):
-            user_type = 'candidat'
-        elif hasattr(user, 'admin'):
-            user_type = 'admin'
-        
-        return Response({
-            'message': 'Connecté avec succès',
-            'user_id': user.id,
-            'user_type': user_type
-        })
+        user = authenticate(request, username=email, password=password)
+        if user is not None:
+            login(request, user)
+            if hasattr(user, 'candidat'):
+                return redirect('candidat_profile')
+            elif hasattr(user, 'admin'):
+                return redirect('admin-profile')
+            else:
+                return redirect('home')
+        else:
+            return render(request, 'connexion.html', {'error': 'Email ou mot de passe incorrect'})
     else:
-        return Response({'error': 'Identifiants invalides'}, status=400)
+        return render(request, 'connexion.html')
 
 
 from .models import Entretien, Departement
