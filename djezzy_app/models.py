@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 
+class VotreModele(models.Model):
+    nom = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nom
+
 
 # Modèle Admin
 class Admin(models.Model):
@@ -15,10 +22,6 @@ class Admin(models.Model):
     password = models.CharField(max_length=100)
     region = models.ForeignKey('Region', on_delete=models.SET_NULL, null=True, blank=True)
     
-
-    class Meta:
-        app_label = 'djezzy_app'
-
 
 class Candidat(models.Model):
     # Lier Candidat au modèle User de Django
@@ -42,6 +45,7 @@ class Candidat(models.Model):
     def check_password(self, password):
         """Vérifie le mot de passe en comparant avec celui stocké."""
         return self.password == password  # Comparaison simple du mot de passe
+
 
 class Region(models.Model):
     # Définir les choix

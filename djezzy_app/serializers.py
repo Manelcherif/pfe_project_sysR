@@ -4,14 +4,27 @@ from django.contrib.auth.password_validation import validate_password
 from .models import (
     Candidat, Langue, Domaine, Specialite, Competence,
     Formation, Experience, Offre, Candidature, Region,
-    Entretien, Departement
+    Entretien, Departement, VotreModele,Admin
 )
+
+class AdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Admin
+        fields ='__all__'
+        # read_only_fields = ['id']
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name']
         read_only_fields = ['id']
+
+class VotreModeleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VotreModele
+        fields = '__all__'
+
 
 class LangueSerializer(serializers.ModelSerializer):
     class Meta:

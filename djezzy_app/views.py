@@ -124,10 +124,21 @@ def logout_view(request):
     return Response({"message": "Déconnexion réussie"})
 
 
+# Removed unused VotreModele API view and related imports to fix database error due to missing table
+
 # views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from .models import VotreModele
+# from .serializers import VotreModeleSerializer
+
+# class VotreModeleList(APIView):
+#     def get(self, request):
+#         objets = VotreModele.objects.all()
+#         serializer = VotreModeleSerializer(objets, many=True)
+#         return Response(serializer.data)
 from rest_framework import status
+from rest_framework.views import APIView
 from .serializers import RegisterCandidatSerializer
 
 
@@ -586,6 +597,285 @@ def detail_candidature(request, id):
 from .models import CandidatLangue
 from .serializers import CandidatLangueSerializer
 
-class CandidatLangueViewSet(viewsets.ModelViewSet):
+from rest_framework import viewsets, status
+from django.contrib.auth.models import User
+from django.utils import timezone
+from .serializers import OffreSerializer, CandidatureSerializer
+from .permissions import IsAdmin 
+from django.core.mail import send_mail
+from django.conf import settings
+from django.shortcuts import redirect
+from django.contrib.auth import login
+from django.contrib.auth import logout
+from rest_framework.exceptions import ValidationError
+from django.shortcuts import render
+from django.contrib.auth import authenticate
+from rest_framework import permissions
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import status
+from .models import (
+    Candidat, Langue, Domaine, Specialite, Competence,
+    Formation, Experience, Offre, Candidature, Region,Admin
+)
+from .serializers import (
+    CandidatSerializer, CandidatDetailSerializer,
+    LangueSerializer,
+    AdminSerializer,
+    DomaineSerializer,
+    SpecialiteSerializer,
+    CompetenceSerializer,
+    FormationSerializer,
+    ExperienceSerializer,
+    OffreSerializer,
+    CandidatureSerializer,
+    RegionSerializer,
+    RegisterCandidatSerializer,  # Assurez-vous que ce serializer existe
+    UpdateCandidatProfileSerializer  # Créez ce serializer dans serializers.py
+)
+from rest_framework.views import APIView
+from rest_framework import generics
+
+class IsAdmin(permissions.BasePermission):
+    """
+    Permission personnalisée qui vérifie si l'utilisateur est un administrateur (role=admin).
+    """
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and hasattr(request.user, 'role') and request.user.role == 'admin'
+
+class IsCandidat(permissions.BasePermission):
+    """
+    Permission personnalisée qui vérifie si l'utilisateur est un candidat (role=candidat).
+    """
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and hasattr(request.user, 'role') and request.user.role == 'candidat'
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Permission qui permet seulement au propriétaire de l'objet de le modifier.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Les permissions en lecture sont autorisées pour toute requête
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # L'écriture est autorisée uniquement au propriétaire
+        if hasattr(obj, 'candidat'):
+            return obj.candidat.user == request.user
+        return False
+
+@api_view(['POST'])
+def logout_view(request):
+    logout(request)
+    return Response({"message": "Déconnexion réussie"})
+
+class RegisterCandidatView(APIView):
+    """
+    Vue permettant l'inscription d'un nouveau candidat.
+    Cette vue crée à la fois un utilisateur Django et un profil Candidat.
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = RegisterCandidatSerializer(data=request.data)
+        if serializer.is_valid():
+            candidat = serializer.save()
+            return Response({
+                "message": "Compte candidat créé avec succès",
+                "candidat_id": candidat.id
+            }, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def envoyer_email(sujet, message, destinataire):
+    """
+    Envoie un e-mail à un destinataire.
+    """
+    send_mail(
+        sujet,
+        message,
+        settings.EMAIL_HOST_USER,
+        [destinataire],
+        fail_silently=False,
+    )
+
+class UserList(generics.ListCreateAPIView):
+    queryset = Admin.objects.all()
+    serializer_class = AdminSerializer
+    permission_classes = [AllowAny]
+    
+class LoginUser(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        email_admin = request.data.get('email_admin')
+        password = request.data.get('password')
+
+        if not email_admin or not password:
+            return Response({"error": "Champs manquants"}, status=status.HTTP_400_BAD_REQUEST)
+
+        admin = Admin.objects.filter(email_admin=email_admin).first()
+
+        if admin and admin.password == password:
+            return Response({"message": "Connexion réussie"}, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "Email ou mot de passe incorrect"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        return Response("False", status=status.HTTP_201_CREATED)
+
+class CandidatViewSet(viewsets.ModelViewSet):
+    """
+    Permet aux candidats de gérer leur propre profil et d'accéder à leurs informations.
+    """
+    queryset = Candidat.objects.all()
+    serializer_class = CandidatSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        """Filtre pour retourner uniquement le candidat connecté ou tous les candidats pour les admins"""
+        if self.request.user.is_staff:
+            return Candidat.objects.all()
+        elif hasattr(self.request.user, 'candidat'):
+            return Candidat.objects.filter(id=self.request.user.candidat.id)
+        return Candidat.objects.none()
+    
+    def get_serializer_class(self):
+        """Utilise le serializer détaillé pour le profil complet ou pour la mise à jour"""
+        if self.action in ['retrieve']:
+            return CandidatDetailSerializer
+        elif self.action in ['update', 'partial_update']:
+            return UpdateCandidatProfileSerializer
+        return super().get_serializer_class()
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def profile(self, request):
+        """
+        Récupère le profil du candidat connecté.
+        """
+        try:
+            candidat = request.user.candidat
+            serializer = CandidatDetailSerializer(candidat)
+            return Response(serializer.data)
+        except Candidat.DoesNotExist:
+            return Response({"detail": "Profil de candidat non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=False, methods=['put', 'patch'], permission_classes=[IsAuthenticated])
+    def update_profile(self, request):
+        """
+        Permet au candidat de mettre à jour son profil.
+        """
+        try:
+            candidat = request.user.candidat
+            serializer = UpdateCandidatProfileSerializer(candidat, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    "message": "Profil mis à jour avec succès",
+                    "candidat": CandidatDetailSerializer(candidat).data
+                })
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Candidat.DoesNotExist:
+            return Response({"detail": "Profil de candidat non trouvé."}, status=status.HTTP_404_NOT_FOUND)
+    
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def postuler_offre(self, request):
+        """
+        Permet à un candidat de postuler à une offre d'emploi.
+        """
+        try:
+            # Vérifier si l'utilisateur est un candidat
+            candidat = request.user.candidat
+        except AttributeError:
+            return Response({"detail": "Aucun profil candidat trouvé pour cet utilisateur."}, status=status.HTTP_403_FORBIDDEN)
+
+        # Récupération de l'ID de l'offre depuis la requête
+        offre_id = request.data.get('offre')
+
+        # Vérifier si l'offre existe
+        try:
+            offre = Offre.objects.get(id_offre=offre_id)
+        except Offre.DoesNotExist:
+            return Response({"detail": "Offre introuvable"}, status=status.HTTP_404_NOT_FOUND)
+
+        # Vérifier si le candidat a déjà postulé à cette offre
+        if Candidature.objects.filter(candidat=candidat, offre=offre).exists():
+            return Response({"detail": "Vous avez déjà postulé à cette offre."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Création de la candidature
+        candidature = Candidature.objects.create(
+            candidat=candidat,
+            offre=offre,
+            date_postulation=timezone.now()
+        )
+        
+        # Envoi d'un e-mail de confirmation au candidat
+        sujet = "Confirmation de votre candidature"
+        message = f"Bonjour {candidat.nom},\n\nVous avez postulé à l'offre '{offre.titre}'. Nous vous tiendrons informé de la suite du processus."
+        envoyer_email(sujet, message, candidat.email)
+        
+        return Response({
+            "detail": "Candidature réussie",
+            "candidature_id": candidature.id
+        }, status=status.HTTP_201_CREATED)
+
+class OffreViewSet(viewsets.ModelViewSet):
+    """
+    Permet à l'administrateur de gérer les offres d'emploi de sa région uniquement.
+    Les candidats peuvent voir toutes les offres mais ne peuvent pas les modifier.
+    """
+    queryset = Offre.objects.all()
+    serializer_class = OffreSerializer
+    permission_classes = [AllowAny]  # Autorisation de base: lecture pour tous
+
+    def get_permissions(self):
+        """
+        Retourne les offres de l'administrateur uniquement pour sa propre région.
+        Si l'utilisateur est un administrateur, il peut gérer les offres de toutes les régions.
+        """
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [IsAdmin()]
+        return [AllowAny()]
+
+    def get_queryset(self):
+        """
+        Retourne les offres de l'administrateur uniquement pour sa propre région.
+        Si l'utilisateur est un administrateur, il peut gérer les offres de toutes les régions.
+        """
+        if self.request.user.is_authenticated and self.request.user.is_staff:
+            return Offre.objects.all()
+        elif self.request.user.is_authenticated and hasattr(self.request.user, 'admin'):
+            admin = self.request.user.admin  # accès à l'objet Admin lié
+            return Offre.objects.filter(admin=admin, region=admin.region)
+        return Offre.objects.all()  # Les candidats peuvent voir toutes les offres 
+
+    @action(detail=True, methods=['get'], permission_classes=[IsAdmin])
+    def candidats(self, request, pk=None):
+        """
+        Permet à l'administrateur de voir les candidats ayant postulé à une offre spécifique.
+        """
+        offre = self.get_object()
+        candidatures = Candidature.objects.filter(offre=offre)
+        serializer = CandidatureSerializer(candidatures, many=True)
+        return Response(serializer.data)
+
+class CandidatLangueViewSet(viewsets.ModelViewSet):        
     queryset = CandidatLangue.objects.all()
     serializer_class = CandidatLangueSerializer    
+
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+class DonneesList(APIView):
+    def get(self, request):
+        data = [
+            {"id": 1, "name": "Exemple 1"},
+            {"id": 2, "name": "Exemple 2"},
+        ]
+        return Response(data)

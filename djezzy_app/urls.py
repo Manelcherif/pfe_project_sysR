@@ -1,12 +1,9 @@
 from django.urls import path, include
 from .views import login_view, liste_offres_api, detail_candidature
 from rest_framework.routers import DefaultRouter
-from .views import (
-    login_view, liste_offres_api, detail_candidature, logout_view, RegisterCandidatView,
-    home, a_propos, admin_profile, candidat_profile, candidats, connexion, contact,
-    creer_annonce, entretien, liste_des_offres, mes_candidats, offres_emploi, offres_candidat,
-    responsable, tableau_de_bord,connexionAdmin
-)
+from .views import DonneesList
+from .views import *
+
 from .views import (
     CandidatViewSet,
     DomaineViewSet,
@@ -21,7 +18,8 @@ from .views import (
     RegisterCandidatView,
     logout_view,
     DepartementViewSet,
-    EntretienViewSet, CandidatLangueViewSet
+    EntretienViewSet, CandidatLangueViewSet,
+    UserList
 )
 
 # Créer un routeur pour générer les routes automatiquement
@@ -63,7 +61,12 @@ urlpatterns = [
     path('auth/logout/', logout_view, name='logout'),
     path('auth/register/', RegisterCandidatView.as_view(), name='register-candidat'),
     
+
+    path('admin/list/', UserList.as_view(), name='lisadmin'),
+    path('admin/login/', LoginUser.as_view(), name='LoginUser'),
+
     # Routes personnalisées pour les candidats
+
     path('candidats/postuler/', CandidatViewSet.as_view({'post': 'postuler_offre'}), name='postuler-offre'),
     path('candidats/profil/', CandidatViewSet.as_view({'get': 'profile'}), name='profil-candidat'),
     path('candidats/update-profil/', CandidatViewSet.as_view({'put': 'update_profile', 'patch': 'update_profile'}), name='update-profil-candidat'),
@@ -73,6 +76,7 @@ urlpatterns = [
     # path('', base, name='base'),  # URL pour la vue de base
     path('offres/liste/', liste_offres_api, name='liste-offres'),
     path('candidatures/<int:id>/', detail_candidature, name='detail-candidature'),
-
-    # Removed URL patterns with .html extensions for cleaner URLs
+    path('donnees/', DonneesList.as_view(), name='donnees-list'),
+    # Removed routes related to VotreModeleList as it no longer exists
 ]
+
