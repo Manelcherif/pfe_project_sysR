@@ -57,27 +57,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'djezzy_project.wsgi.application'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'djezzy_app',
+        'USER': 'postgres',
+        'PASSWORD': '150403',
+        'HOST': 'localhost',
+        'PORT': '5432',
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },
+    }
+}
+
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'DB_project_pfe',
-#         'USER': 'postgres',
-#         'PASSWORD': '150403',
-#         'HOST': 'localhost',
-#         'PORT': '5432',
-#         'OPTIONS': {
-#             'client_encoding': 'UTF8',
-#         },
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'mydatabase', # This is where you put the name of the db file. 
+#                  # If one doesn't exist, it will be created at migration time.
 #     }
 # }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'mydatabase', # This is where you put the name of the db file. 
-                 # If one doesn't exist, it will be created at migration time.
-    }
-}
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',},

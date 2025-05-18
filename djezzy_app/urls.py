@@ -63,6 +63,11 @@ urlpatterns = [
     
 
     path('admin/list/', UserList.as_view(), name='lisadmin'),
+    path('admin/edit/<int:pk>', UserUpdate.as_view(), name='editadmin'),
+
+    
+
+    
     path('admin/login/', LoginUser.as_view(), name='LoginUser'),
 
     # Routes personnalisées pour les candidats

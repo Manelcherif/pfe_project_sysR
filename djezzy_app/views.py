@@ -703,6 +703,13 @@ class UserList(generics.ListCreateAPIView):
     queryset = Admin.objects.all()
     serializer_class = AdminSerializer
     permission_classes = [AllowAny]
+
+
+class UserUpdate(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Admin.objects.all()
+    serializer_class = AdminSerializer
+    permission_classes = [AllowAny]
+    lookup_fields = ['pk']
     
 class LoginUser(APIView):
     permission_classes = [AllowAny]
